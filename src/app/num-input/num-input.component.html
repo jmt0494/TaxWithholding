@@ -1,0 +1,10 @@
+<mat-form-field appearance="fill">
+    <mat-label>{{name}}</mat-label>
+    <input
+        matInput
+        #input
+        (input)="emitInput(input.value)" 
+        type="text" 
+    />
+</mat-form-field>
+<br>

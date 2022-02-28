@@ -1,0 +1,120 @@
+<div>
+    <mat-horizontal-stepper labelPosition="bottom">        
+        <mat-step label="Pay Periods"> <!--sets number of pay periods-->
+            <label>How many pay periods do you have this year?</label>
+            <br>
+            <app-num-input [name]="'Pay Periods'" (userInput)="setPayPeriods($event)"></app-num-input>
+            <button mat-stroked-button color="primary" matStepperNext>next</button>
+        </mat-step>
+
+        <mat-step label="Marital Status"><!--  sets maritalStatus -->
+            <label id="marital-status">What is your marital status?</label>
+            <mat-radio-group
+            aria-labelledby="marital-status"
+            class="marital-status"
+            [(ngModel)]="maritalStatus">
+            <mat-radio-button class="marital status"[value]="'single'">
+                Single or Married filing separately
+            </mat-radio-button>
+            <mat-radio-button class="marital status"[value]="'married'">
+                Married filing jointly or Qualifying widow(er)
+            </mat-radio-button>
+            <mat-radio-button class="marital status"[value]="'head'">
+                Head of household
+            </mat-radio-button>
+            </mat-radio-group>
+            <br>
+            <button mat-stroked-button color="primary" matStepperPrevious>Back</button>
+            <button mat-stroked-button color="primary" matStepperNext>next</button>
+        </mat-step>
+
+        <mat-step label="Extra Jobs"> <!--sets highPay, lowPay, midPay for use is findMultiJobWithholdings-->
+            <label id="job-number">Do you have more than one job or does your spouse work?</label>
+            <mat-radio-group
+            aria-labelledby="job-number"
+            class="job-number"
+            [(ngModel)]="multipleJobs">
+                <mat-radio-button [value]="true">Yes</mat-radio-button>
+                <mat-radio-button (click)="resetPay()" [value]="false">No</mat-radio-button>
+            </mat-radio-group>
+            <div *ngIf="multipleJobs">
+                <br>
+                <label id="job-number">Choose one.</label>
+                <mat-radio-group
+                aria-labelledby="job-number"
+                class="job-number"
+                [(ngModel)]="earnDifferent">
+                    <mat-radio-button [value]="false">Both of my jobs earn about the same.</mat-radio-button>
+                    <mat-radio-button [value]="true">One of my jobs earns significantly more than the other or I have three jobs.</mat-radio-button>
+                </mat-radio-group>
+                <div *ngIf="earnDifferent">
+                    <app-num-input 
+                    *ngFor="let label of payLabels"
+                    [name]="label"
+                    (userInput)="updatePayState(label, $event)"
+                    ></app-num-input>
+                    <br>
+                </div>
+            </div>
+            <br>
+            <button mat-stroked-button color="primary" matStepperPrevious>Back</button>
+            <button mat-stroked-button color="primary" matStepperNext>next</button>
+        </mat-step>
+
+        <mat-step label="Claim Dependents"> <!--sets minorDepend, nonMinorDepend, otherCredit and sums to set value of credits-->
+            <label>Enter number of dependents and other tax credits.</label>
+            <br>
+            <app-num-input 
+                *ngFor="let label of dependLabels"
+                [name]="label"
+                (userInput)="updateCeditsState(label, $event)"></app-num-input>
+            <button mat-stroked-button color="primary" matStepperPrevious>Back</button>
+            <button mat-stroked-button color="primary" matStepperNext>next</button>
+        </mat-step>
+
+        <mat-step label="Other Withholdings"> <!--sets nonJobAdjust-->
+            <label>Enter the income from any non-job related sources.</label>
+            <br>
+            <app-num-input 
+                [name]="'Other income (not from jobs)'"
+                (userInput)="setNonJobAdjust($event)"></app-num-input>
+                <button mat-stroked-button color="primary" matStepperPrevious>Back</button>
+                <button mat-stroked-button color="primary" matStepperNext>next</button>
+        </mat-step>
+
+        <mat-step label="Other Adjustments"> <!--sets deductionEst and otherAdjusts for use in findDeductions-->
+            <label>Do you plan to itemize your deductions this year?</label>
+            <mat-radio-group
+            [(ngModel)]="itemized">
+                <mat-radio-button [value]="true">Yes</mat-radio-button>
+                <mat-radio-button (click)="resetAdjusts()" [value]="false">No</mat-radio-button>
+            </mat-radio-group>
+            <br>
+            <div *ngIf="itemized">
+                <label>Enter an estimate of your 2022 itemized deductions (from Schedule A (Form 1040))</label>
+                <br>
+                <app-num-input [name]="'Deductions'" (userInput)="setDeductEst($event)"></app-num-input> 
+                <label>Enter an estimate of your student loan interest, deductible IRA contributions, and certain other
+                    adjustments </label>
+                    <br>
+                <app-num-input [name]="'Other Adjustments'" (userInput)="setOtherAdjust($event)"></app-num-input> 
+            </div>
+            <button mat-stroked-button color="primary" matStepperPrevious>Back</button>
+            <button mat-stroked-button color="primary" matStepperNext>next</button>
+        </mat-step>
+
+        <mat-step label="Calculate Withholdings"> <!--calls finalCalc--> <!--sets number of pay periods-->
+            <label>What is the taxable income for this paycheck?</label>
+            <br>
+            <app-num-input [name]="'Pay'" (userInput)="setGrossPay($event)"></app-num-input>
+            <div *ngIf="calculated">
+                <h4>Federal Income Tax Withholdings: {{fedIncomeTax}}</h4>
+                <h4>Social Security Withholdings: {{socialSecurity}}</h4>
+                <h4>Medicare Withholdings: {{medicare}}</h4>
+            </div>
+            <button mat-raised-button color="primary" (click)="finalCalc()">Find Withholdings</button>
+            <br>
+            <button mat-stroked-button color="primary" matStepperPrevious>Back</button>
+        </mat-step>
+    </mat-horizontal-stepper>
+ </div>
