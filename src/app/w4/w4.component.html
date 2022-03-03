@@ -47,7 +47,7 @@
                     <mat-radio-button [value]="false">Both of my jobs earn about the same.</mat-radio-button>
                     <mat-radio-button [value]="true">One of my jobs earns significantly more than the other or I have three jobs.</mat-radio-button>
                 </mat-radio-group>
-                <div *ngIf="earnDifferent">
+                <div *ngIf="earnDifferent === true">
                     <app-num-input 
                     *ngFor="let label of payLabels"
                     [name]="label"
@@ -67,7 +67,7 @@
             <app-num-input 
                 *ngFor="let label of dependLabels"
                 [name]="label"
-                (userInput)="updateCeditsState(label, $event)"></app-num-input>
+                (userInput)="updateCreditsState(label, $event)"></app-num-input>
             <button mat-stroked-button color="primary" matStepperPrevious>Back</button>
             <button mat-stroked-button color="primary" matStepperNext>next</button>
         </mat-step>
